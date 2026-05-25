@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterView AI - Elite Multi-Agent Interview Arena</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons for premium feel -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --bg-base: hsl(224, 25%, 6%);
+            --bg-surface: hsla(223, 20%, 12%, 0.6);
+            --bg-surface-solid: hsl(223, 20%, 12%);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            
+            --accent-primary: hsl(263, 80%, 62%);
+            --accent-primary-glow: rgba(124, 58, 237, 0.3);
+            --accent-secondary: hsl(172, 80%, 46%);
+            --accent-secondary-glow: rgba(13, 148, 136, 0.3);
+            --accent-warning: hsl(38, 92%, 50%);
+            --accent-warning-glow: rgba(217, 119, 6, 0.2);
+            --accent-danger: hsl(350, 89%, 60%);
+            
+            --text-primary: hsl(210, 40%, 98%);
+            --text-secondary: hsl(215, 20%, 75%);
+            --text-muted: hsl(215, 15%, 55%);
+            
+            --font-headings: 'Outfit', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Resets */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Background Blobs */
+        .glowing-bg {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.15;
+            animation: float-blobs 25s infinite alternate ease-in-out;
+        }
+
+        .blob-1 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-primary) 0%, transparent 80%);
+            top: -200px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--accent-secondary) 0%, transparent 80%);
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float-blobs {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 80px) scale(1.1); }
+            100% { transform: translate(-30px, -40px) scale(0.95); }
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-headings);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        a:hover {
+            color: var(--text-primary);
+            text-shadow: 0 0 10px var(--accent-secondary-glow);
+        }
+
+        /* App Container Layout */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-glow);
+            margin-bottom: 3rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--text-primary), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .agent-status-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glow);
+            border-radius: 99px;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-secondary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-secondary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(13, 148, 136, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+        }
+
+        /* Glassmorphic Cards styling */
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glow);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Screen Sections (hidden by default) */
+        .screen {
+            display: none;
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .form-group label {
+            font-family: var(--font-headings);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .custom-select {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: var(--text-primary);
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .custom-select:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-glow);
+        }
+
+        /* Drag & Drop Upload Container */
+        .upload-container {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.01);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .upload-container:hover, .upload-container.dragover {
+            border-color: var(--accent-secondary);
+            background: rgba(13, 148, 136, 0.02);
+            box-shadow: 0 0 25px rgba(13, 148, 136, 0.1);
+        }
+
+        .upload-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-glow);
+            color: var(--accent-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        .upload-container:hover .upload-icon-wrapper {
+            background: var(--accent-secondary);
+            color: var(--bg-base);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px var(--accent-secondary-glow);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Button styling */
+        .btn {
+            background: linear-gradient(135deg, var(--accent-primary), #6d28d9);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 14px;
+            padding: 1.1rem 2.5rem;
+            font-size: 1.05rem;
+            font-family: var(--font-headings);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 8px 20px var(--accent-primary-glow);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(124, 58, 237, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--accent-secondary), #0f766e);
+            box-shadow: 0 8px 20px var(--accent-secondary-glow);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 12px 28px rgba(13, 148, 136, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-glow);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Loading Spinner Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(9, 10, 15, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(124, 58, 237, 0.1);
+            border-left-color: var(--accent-primary);
+            border-right-color: var(--accent-secondary);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-family: var(--font-headings);
+            font-size: 1.25rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--text-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Step 2: Resume Analysis Dashboard Grid */
+        .analysis-dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 1.75rem;
+        }
+
+        .analysis-card-title {
+            font-size: 1.1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        .skill-badge {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(124, 58, 237, 0.05));
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            color: #d8b4fe;
+            padding: 0.4rem 0.9rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .missing-badge {
+            background: linear-gradient(135deg, rgba(217, 119, 6, 0.15), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(217, 119, 6, 0.3);
+            color: #fcd34d;
+            padding: 0.4rem 0.9rem;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .analysis-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .analysis-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .analysis-list li i-lucide {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .project-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .project-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .project-tech {
+            font-size: 0.8rem;
+            color: var(--accent-secondary);
+            font-family: monospace;
+        }
+
+        /* Step 3: Mock Interview Arena */
+        .arena-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .question-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .q-number {
+            font-family: var(--font-headings);
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .q-badge {
+            background: rgba(13, 148, 136, 0.1);
+            border: 1px solid rgba(13, 148, 136, 0.3);
+            color: var(--accent-secondary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Timer UI */
+        .timer-wrapper {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 60px;
+            height: 60px;
+        }
+
+        .timer-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 4;
+        }
+
+        .timer-progress {
+            fill: none;
+            stroke: var(--accent-secondary);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 176;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear, stroke var(--transition-smooth);
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-headings);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .question-text-box {
+            font-family: var(--font-headings);
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.45;
+            margin-bottom: 2.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Answer Input Box & Voice Controls */
+        .answer-input-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .answer-textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            color: var(--text-primary);
+            padding: 1.25rem 1.5rem;
+            font-size: 1.05rem;
+            font-family: var(--font-body);
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .answer-textarea:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-glow);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .textarea-controls {
+            position: absolute;
+            bottom: 1rem;
+            right: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 2;
+        }
+
+        .word-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Pulsing Voice Recorder Button */
+        .mic-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glow);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+
+        .mic-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .mic-btn.recording {
+            background: var(--accent-primary);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px var(--accent-primary);
+            animation: mic-breathe 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes mic-breathe {
+            0% { transform: scale(1); box-shadow: 0 0 8px var(--accent-primary-glow); }
+            100% { transform: scale(1.1); box-shadow: 0 0 25px var(--accent-primary); }
+        }
+
+        /* Voice Status Toast */
+        .voice-status-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent-primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Step 4: Real-time Evaluation Panel */
+        .evaluation-drawer {
+            display: none;
+            margin-top: 2.5rem;
+            padding-top: 2.5rem;
+            border-top: 1px solid var(--border-glow);
+            animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eval-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Visual circular score display */
+        .score-circle-wrapper {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+        }
+
+        .score-svg {
+            transform: rotate(-90deg);
+            width: 80px;
+            height: 80px;
+        }
+
+        .score-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 6;
+        }
+
+        .score-progress {
+            fill: none;
+            stroke: url(#scoreGradient);
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 232;
+            stroke-dashoffset: 232;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .score-number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-headings);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .eval-title-block h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .confidence-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .conf-high { color: var(--accent-secondary); }
+        .conf-medium { color: var(--accent-warning); }
+        .conf-low { color: var(--accent-danger); }
+
+        .eval-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .eval-panel {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 1.5rem;
+        }
+
+        .eval-panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Collapsible Model Answer Accordion */
+        .accordion-btn {
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .accordion-content {
+            display: none;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--accent-secondary);
+        }
+
+        .resource-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Step 5: Dashboard / Scorecard */
+        .scorecard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .overall-radial {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin-bottom: 1rem;
+        }
+
+        .overall-radial svg {
+            width: 160px;
+            height: 160px;
+            transform: rotate(-90deg);
+        }
+
+        .overall-radial-progress {
+            fill: none;
+            stroke: url(#overallGradient);
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 471;
+            stroke-dashoffset: 471;
+            transition: stroke-dashoffset 2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .overall-radial-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-headings);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .final-dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .full-width-card {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .analysis-dashboard, .final-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width-card {
+                grid-column: span 1;
+            }
+        }
+
+        /* Utility classes */
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-glow);
+        }
+
+        .icon-primary { color: var(--accent-primary); background: rgba(124, 58, 237, 0.08); }
+        .icon-secondary { color: var(--accent-secondary); background: rgba(13, 148, 136, 0.08); }
+        .icon-warning { color: var(--accent-warning); background: rgba(217, 119, 6, 0.08); }
+
+        .mt-2 { margin-top: 1rem; }
+        .mr-2 { margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Glowing Blurs -->
+    <div class="glowing-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        
+        <!-- Application Header -->
+        <header>
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i data-lucide="cpu" style="width: 24px; height: 24px; color: #fff;"></i>
+                </div>
+                <span class="logo-text">InterView AI</span>
+            </div>
+            
+            <div class="agent-status-badge">
+                <div class="pulse-dot"></div>
+                <span id="agentStatusText">Multi-Agent Swarm Idle</span>
+            </div>
+        </header>
+
+        <!-- SCREEN 1: ONBOARDING & RESUME UPLOAD -->
+        <div id="screenOnboarding" class="screen active">
+            <div class="glass-card" style="max-width: 650px; margin: 0 auto; position: relative;">
+                
+                <!-- Loading Overlay inside card -->
+                <div class="loading-overlay" id="onboardingLoading">
+                    <div class="spinner"></div>
+                    <div class="loading-text" id="onboardingLoadingText">Analyzing Resume PDF...</div>
+                </div>
+
+                <h2 style="font-size: 1.8rem; margin-bottom: 0.75rem; text-align: center;">Prepare For Your Dream Role</h2>
+                <p style="text-align: center; margin-bottom: 2.5rem; font-size: 1.05rem;">
+                    Upload your resume to deploy our AI Recruiter Swarm. We will analyze your skills, custom-craft interview prompts, and guide your prep.
+                </p>
+
+                <form id="onboardingForm">
+                    <div class="form-group">
+                        <label for="targetRole">Target Professional Role</label>
+                        <select class="custom-select" id="targetRole">
+                            <option value="Python Developer" selected>Python Developer (Flask / Django)</option>
+                            <option value="React Developer">React Developer (Frontend)</option>
+                            <option value="Full Stack Developer">Full Stack Engineer</option>
+                            <option value="Data Scientist">Data Scientist / AI Engineer</option>
+                            <option value="Product Manager">Technical Product Manager</option>
+                            <option value="General Software Engineer">General Software Engineer (CS Fundamentals)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 2.5rem;">
+                        <label>Upload Resume (PDF format)</label>
+                        <div class="upload-container" id="uploadZone">
+                            <input type="file" id="resumeFileInput" class="file-input" accept="application/pdf">
+                            <div class="upload-icon-wrapper" id="uploadIcon">
+                                <i data-lucide="file-text" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <div id="uploadText">
+                                <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">
+                                    Drag & Drop your resume here
+                                </p>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                    or click to browse from local files (PDF only, max 10MB)
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn" id="btnStartAnalysis" disabled>
+                            <i data-lucide="sparkles" style="width: 18px; height: 18px;"></i>
+                            Deploy Recruiter Agents
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: RESUME ANALYSIS DASHBOARD -->
+        <div id="screenAnalysis" class="screen">
+            <div class="glass-card">
+                
+                <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="analysisRoleTitle">Python Developer Profile Assessment</h2>
+                <p style="margin-bottom: 2.5rem; font-size: 1rem;">
+                    Our Resume Analyzer Agent parsed your profile. Review the extracted skills, identified strengths, and recommended improvements before starting your mock interview.
+                </p>
+
+                <!-- Grid of Extracted Data -->
+                <div class="analysis-dashboard">
+                    <!-- Skills -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-primary"><i data-lucide="cpu" style="width: 18px;"></i></div>
+                            <span>Extracted Tech Stack</span>
+                        </div>
+                        <div class="skills-grid" id="profileSkills">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Missing Skills -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-warning"><i data-lucide="alert-circle" style="width: 18px;"></i></div>
+                            <span>Target Improvements (Missing Skills)</span>
+                        </div>
+                        <div class="skills-grid" id="profileMissingSkills">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Strengths -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-secondary"><i data-lucide="check-circle-2" style="width: 18px;"></i></div>
+                            <span>Core Competencies & Strengths</span>
+                        </div>
+                        <ul class="analysis-list" id="profileStrengths">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Projects -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-primary"><i data-lucide="folder-git-2" style="width: 18px;"></i></div>
+                            <span>Identified Projects</span>
+                        </div>
+                        <div id="profileProjects">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-outline" onclick="goToScreen('Onboarding')">
+                        <i data-lucide="arrow-left" style="width: 18px;"></i> Re-upload
+                    </button>
+                    <button class="btn btn-secondary" id="btnInitiateInterview">
+                        Enter Mock Interview Arena <i data-lucide="arrow-right" style="width: 18px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: INTERVIEW ARENA -->
+        <div id="screenArena" class="screen">
+            <div class="glass-card" style="position: relative;">
+                
+                <!-- Loading Spinner for evaluating answers -->
+                <div class="loading-overlay" id="arenaLoading">
+                    <div class="spinner"></div>
+                    <div class="loading-text" id="arenaLoadingText">Evaluating Answer via Feedback Agent...</div>
+                </div>
+
+                <!-- Arena Header Details -->
+                <div class="arena-header">
+                    <div class="question-meta">
+                        <span class="q-number" id="arenaQuestionIndex">Question 1 of 4</span>
+                        <span class="q-badge" id="arenaQuestionType">Technical</span>
+                    </div>
+
+                    <!-- Countdown Timer -->
+                    <div class="timer-wrapper">
+                        <svg class="timer-svg">
+                            <circle class="timer-bg" cx="30" cy="30" r="28"></circle>
+                            <circle class="timer-progress" cx="30" cy="30" r="28" id="timerCircle"></circle>
+                        </svg>
+                        <div class="timer-text" id="timerValue">120</div>
+                    </div>
+                </div>
+
+                <!-- Actual Question Text -->
+                <div class="question-text-box" id="arenaQuestionText">
+                    Loading Question details...
+                </div>
+
+                <!-- Candidate Answer Area -->
+                <div class="form-group" style="gap: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <label for="answerTextarea">Your Professional Response</label>
+                        <div class="voice-status-indicator" id="voiceActiveIndicator">
+                            <span class="pulse-dot" style="background-color: var(--accent-primary); box-shadow: 0 0 10px var(--accent-primary);"></span>
+                            <span>Speech Recognition Active... Speak Clearly</span>
+                        </div>
+                    </div>
+
+                    <div class="answer-input-wrapper">
+                        <textarea class="answer-textarea" id="answerTextarea" placeholder="Provide a detailed, structural answer here. Explain key architectural decisions, concrete libraries, or past experience..."></textarea>
+                        
+                        <div class="textarea-controls">
+                            <span class="word-count" id="answerWordCount">0 words</span>
+                            
+                            <!-- Voice Input mic button -->
+                            <button class="mic-btn" id="btnMicInput" title="Speak Answer (Voice-to-Text)">
+                                <i data-lucide="mic" style="width: 20px; height: 20px;"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; align-items: center;">
+                    <button class="btn btn-outline" id="btnSkipQuestion">Skip Question</button>
+                    <button class="btn btn-secondary" id="btnSubmitAnswer">
+                        Submit Response & Analyze <i data-lucide="sparkles" style="width: 18px;"></i>
+                    </button>
+                </div>
+
+                <!-- SCREEN 4: SUB-DRAWER REAL-TIME FEEDBACK -->
+                <div class="evaluation-drawer" id="evaluationDrawer">
+                    <div class="eval-header">
+                        <div class="score-circle-wrapper">
+                            <svg class="score-svg">
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="var(--accent-primary)" />
+                                        <stop offset="100%" stop-color="var(--accent-secondary)" />
+                                    </linearGradient>
+                                </defs>
+                                <circle class="score-bg" cx="40" cy="40" r="37"></circle>
+                                <circle class="score-progress" cx="40" cy="40" r="37" id="evalScoreCircle"></circle>
+                            </svg>
+                            <div class="score-number" id="evalScoreNumber">0/10</div>
+                        </div>
+
+                        <div class="eval-title-block">
+                            <h3 id="evalTitle">Feedback Assessment</h3>
+                            <div>
+                                <span class="text-muted">Phrasing Confidence:</span>
+                                <span class="confidence-label conf-high" id="evalConfidence">
+                                    <i data-lucide="sparkles" style="width: 14px;"></i> High
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="eval-grid">
+                        <!-- Correctness analysis -->
+                        <div class="eval-panel">
+                            <div class="eval-panel-title">
+                                <i data-lucide="check-circle" style="width: 16px; color: var(--accent-secondary);"></i>
+                                Correctness & Accuracy
+                            </div>
+                            <p id="evalCorrectness" style="font-size: 0.95rem; color: var(--text-primary);"></p>
+                        </div>
+
+                        <!-- Suggestions for improvements -->
+                        <div class="eval-panel">
+                            <div class="eval-panel-title">
+                                <i data-lucide="arrow-up-circle" style="width: 16px; color: var(--accent-warning);"></i>
+                                Suggestions for Improvement
+                            </div>
+                            <p id="evalSuggestions" style="font-size: 0.95rem; color: var(--text-primary);"></p>
+                        </div>
+
+                        <!-- Model Answer Accordion -->
+                        <div class="eval-panel">
+                            <button class="accordion-btn" id="btnAccordionToggle">
+                                <span class="eval-panel-title" style="margin-bottom: 0;">
+                                    <i data-lucide="book-open" style="width: 16px; color: var(--accent-primary);"></i>
+                                    View Suggested Model Response
+                                </span>
+                                <i data-lucide="chevron-down" style="width: 18px;" id="accordionChevron"></i>
+                            </button>
+                            <div class="accordion-content" id="accordionContent">
+                                <!-- Suggested answer here -->
+                            </div>
+                        </div>
+
+                        <!-- Recommended Resources -->
+                        <div class="eval-panel" id="evalResourcesPanel">
+                            <div class="eval-panel-title">
+                                <i data-lucide="link" style="width: 16px; color: var(--accent-secondary);"></i>
+                                Recommended Study Materials
+                            </div>
+                            <div class="resource-links" id="evalResources">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button class="btn btn-secondary" id="btnNextQuestion">
+                            Proceed to Next Question <i data-lucide="chevron-right" style="width: 18px;"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: FINAL SCOREBOARD & REPORT -->
+        <div id="screenScorecard" class="screen">
+            <div class="glass-card">
+                
+                <div class="scorecard-header">
+                    <div class="icon-circle icon-primary" style="width: 60px; height: 60px; margin-bottom: 0.5rem;">
+                        <i data-lucide="award" style="width: 32px; height: 32px;"></i>
+                    </div>
+                    <h2 style="font-size: 2.2rem; margin-bottom: 0.25rem;">Interview Prep Complete!</h2>
+                    <p style="font-size: 1.1rem; max-width: 600px;">
+                        Congratulations! The Agent Swarm has calculated your final scores. Review your technical assessment report below.
+                    </p>
+
+                    <!-- Overall circular score -->
+                    <div class="overall-radial">
+                        <svg>
+                            <defs>
+                                <linearGradient id="overallGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="var(--accent-secondary)" />
+                                    <stop offset="100%" stop-color="var(--accent-primary)" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="80" cy="80" r="75" style="fill:none; stroke:rgba(255,255,255,0.03); stroke-width:10;"></circle>
+                            <circle class="overall-radial-progress" cx="80" cy="80" r="75" id="finalOverallProgressCircle"></circle>
+                        </svg>
+                        <div class="overall-radial-text" id="finalOverallScoreText">0%</div>
+                    </div>
+                </div>
+
+                <div class="final-dashboard-grid">
+                    <!-- Performance Summary -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-secondary"><i data-lucide="bar-chart-3" style="width: 18px;"></i></div>
+                            <span>Category Breakdown</span>
+                        </div>
+                        <ul class="analysis-list" style="gap: 1.25rem;">
+                            <li>
+                                <div style="width: 100%;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+                                        <span style="font-weight:600;">Technical Comprehension</span>
+                                        <span id="scoreTechVal" style="color: var(--accent-secondary);">0/10</span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.04); height: 8px; border-radius: 99px; overflow: hidden;">
+                                        <div id="barTech" style="background: var(--accent-secondary); height: 100%; width: 0%; transition: width 1.5s ease-out;"></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div style="width: 100%;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+                                        <span style="font-weight:600;">System Design & Scenarios</span>
+                                        <span id="scoreScenarioVal" style="color: var(--accent-primary);">0/10</span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.04); height: 8px; border-radius: 99px; overflow: hidden;">
+                                        <div id="barScenario" style="background: var(--accent-primary); height: 100%; width: 0%; transition: width 1.5s ease-out;"></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div style="width: 100%;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.9rem;">
+                                        <span style="font-weight:600;">Communication & HR/Behavioral</span>
+                                        <span id="scoreHRVal" style="color: var(--accent-warning);">0/10</span>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.04); height: 8px; border-radius: 99px; overflow: hidden;">
+                                        <div id="barHR" style="background: var(--accent-warning); height: 100%; width: 0%; transition: width 1.5s ease-out;"></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Agent Feedback & Next Steps -->
+                    <div class="analysis-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-primary"><i data-lucide="shield-check" style="width: 18px;"></i></div>
+                            <span>Recruiter Swarm Recommendation</span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <p style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.6;" id="finalSwarmRecommendation">
+                                Evaluating your aggregate performance details...
+                            </p>
+                            <div id="finalReviewAction" style="font-size: 0.9rem; font-weight: 600; padding: 0.75rem 1rem; border-radius: 8px; background: rgba(13,148,136,0.05); border: 1px dashed rgba(13,148,136,0.2); color: var(--accent-secondary); text-align: center;">
+                                READY FOR SYSTEM TRIALS
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Study Roadmap -->
+                    <div class="analysis-card full-width-card">
+                        <div class="analysis-card-title">
+                            <div class="icon-circle icon-warning"><i data-lucide="list-todo" style="width: 18px;"></i></div>
+                            <span>Tailored Learning Roadmap & Action Items</span>
+                        </div>
+                        <ul class="analysis-list" id="finalRoadmapItems">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center;">
+                    <button class="btn btn-outline" id="btnRestartSession">
+                        <i data-lucide="rotate-ccw" style="width: 18px;"></i> Restart Session
+                    </button>
+                    <button class="btn btn-secondary" id="btnDownloadReport">
+                        Download Assessment Summary <i data-lucide="download" style="width: 18px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- App Logic Script -->
+    <script>
+        // DOM Elements
+        const screens = {
+            Onboarding: document.getElementById('screenOnboarding'),
+            Analysis: document.getElementById('screenAnalysis'),
+            Arena: document.getElementById('screenArena'),
+            Scorecard: document.getElementById('screenScorecard')
+        };
+        const agentStatusText = document.getElementById('agentStatusText');
+        
+        // Onboarding Screen
+        const onboardingForm = document.getElementById('onboardingForm');
+        const targetRoleSelect = document.getElementById('targetRole');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('resumeFileInput');
+        const uploadText = document.getElementById('uploadText');
+        const uploadIcon = document.getElementById('uploadIcon');
+        const btnStartAnalysis = document.getElementById('btnStartAnalysis');
+        const onboardingLoading = document.getElementById('onboardingLoading');
+        const onboardingLoadingText = document.getElementById('onboardingLoadingText');
+
+        // Profile Dashboard Screen
+        const analysisRoleTitle = document.getElementById('analysisRoleTitle');
+        const profileSkills = document.getElementById('profileSkills');
+        const profileMissingSkills = document.getElementById('profileMissingSkills');
+        const profileStrengths = document.getElementById('profileStrengths');
+        const profileProjects = document.getElementById('profileProjects');
+        const btnInitiateInterview = document.getElementById('btnInitiateInterview');
+
+        // Arena Screen
+        const arenaLoading = document.getElementById('arenaLoading');
+        const arenaLoadingText = document.getElementById('arenaLoadingText');
+        const arenaQuestionIndex = document.getElementById('arenaQuestionIndex');
+        const arenaQuestionType = document.getElementById('arenaQuestionType');
+        const arenaQuestionText = document.getElementById('arenaQuestionText');
+        const answerTextarea = document.getElementById('answerTextarea');
+        const answerWordCount = document.getElementById('answerWordCount');
+        const btnMicInput = document.getElementById('btnMicInput');
+        const voiceActiveIndicator = document.getElementById('voiceActiveIndicator');
+        const timerCircle = document.getElementById('timerCircle');
+        const timerValue = document.getElementById('timerValue');
+        const btnSkipQuestion = document.getElementById('btnSkipQuestion');
+        const btnSubmitAnswer = document.getElementById('btnSubmitAnswer');
+        
+        // Evaluation Drawer inside Arena
+        const evaluationDrawer = document.getElementById('evaluationDrawer');
+        const evalScoreCircle = document.getElementById('evalScoreCircle');
+        const evalScoreNumber = document.getElementById('evalScoreNumber');
+        const evalTitle = document.getElementById('evalTitle');
+        const evalConfidence = document.getElementById('evalConfidence');
+        const evalCorrectness = document.getElementById('evalCorrectness');
+        const evalSuggestions = document.getElementById('evalSuggestions');
+        const btnAccordionToggle = document.getElementById('btnAccordionToggle');
+        const accordionChevron = document.getElementById('accordionChevron');
+        const accordionContent = document.getElementById('accordionContent');
+        const evalResourcesPanel = document.getElementById('evalResourcesPanel');
+        const evalResources = document.getElementById('evalResources');
+        const btnNextQuestion = document.getElementById('btnNextQuestion');
+
+        // Scorecard Screen
+        const finalOverallProgressCircle = document.getElementById('finalOverallProgressCircle');
+        const finalOverallScoreText = document.getElementById('finalOverallScoreText');
+        const scoreTechVal = document.getElementById('scoreTechVal');
+        const scoreScenarioVal = document.getElementById('scoreScenarioVal');
+        const scoreHRVal = document.getElementById('scoreHRVal');
+        const barTech = document.getElementById('barTech');
+        const barScenario = document.getElementById('barScenario');
+        const barHR = document.getElementById('barHR');
+        const finalSwarmRecommendation = document.getElementById('finalSwarmRecommendation');
+        const finalReviewAction = document.getElementById('finalReviewAction');
+        const finalRoadmapItems = document.getElementById('finalRoadmapItems');
+        const btnRestartSession = document.getElementById('btnRestartSession');
+        const btnDownloadReport = document.getElementById('btnDownloadReport');
+
+        // App State
+        let targetRole = "Python Developer";
+        let uploadedFile = null;
+        let candidateProfile = null;
+        let interviewQuestions = [];
+        let currentQuestionIndex = 0;
+        let interviewTimer = null;
+        let timerSecondsRemaining = 120;
+        let timerTotalSeconds = 120;
+        let sessionAnswers = []; // Store question evaluations
+
+        // Lucide Icon Initializer
+        lucide.createIcons();
+
+        // Screen Routing
+        function goToScreen(screenName) {
+            Object.keys(screens).forEach(name => {
+                if (name === screenName) {
+                    screens[name].classList.add('active');
+                } else {
+                    screens[name].classList.remove('active');
+                }
+            });
+            
+            // Adjust header statuses depending on current screen
+            if (screenName === 'Onboarding') {
+                updateAgentStatus('Multi-Agent Swarm Idle', false);
+            } else if (screenName === 'Analysis') {
+                updateAgentStatus('Resume Analyzer Completed', false);
+            } else if (screenName === 'Arena') {
+                updateAgentStatus('Interview Arena Live', true);
+            } else if (screenName === 'Scorecard') {
+                updateAgentStatus('Evaluation Complete', false);
+            }
+            
+            // Re-render Lucide icons dynamically added
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateAgentStatus(text, pulsing) {
+            agentStatusText.textContent = text;
+            const dot = document.querySelector('.pulse-dot');
+            if (pulsing) {
+                dot.style.display = 'block';
+            } else {
+                dot.style.display = 'block'; // Always show dot for styling
+            }
+        }
+
+        // ==========================================
+        // 1. Screen 1: Drag & Drop Resume Upload
+        // ==========================================
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadZone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadZone.classList.remove('dragover');
+            }, false);
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        });
+
+        uploadZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            const file = files[0];
+            
+            if (file.type !== "application/pdf" && !file.name.endsWith('.pdf')) {
+                alert("Only PDF files are supported currently.");
+                return;
+            }
+            
+            uploadedFile = file;
+            uploadIcon.innerHTML = '<i data-lucide="file-check" style="width: 32px; height: 32px; color: var(--accent-secondary);"></i>';
+            uploadText.innerHTML = `
+                <p style="font-weight: 600; color: var(--accent-secondary); margin-bottom: 0.25rem;">File Selected Successfully</p>
+                <p style="font-size: 0.9rem; color: var(--text-primary);">${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)</p>
+            `;
+            btnStartAnalysis.removeAttribute('disabled');
+            lucide.createIcons();
+        }
+
+        // Deploy Resume Agent Analysis
+        onboardingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!uploadedFile) return;
+            
+            targetRole = targetRoleSelect.value;
+            
+            // Show Spinner
+            onboardingLoading.style.display = 'flex';
+            updateAgentStatus('Resume Agent Analyzing...', true);
+            
+            const formData = new FormData();
+            formData.append("resume", uploadedFile);
+            formData.append("role", targetRole);
+            
+            fetch("/api/analyze-resume", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Server error occurred during parsing.");
+                return res.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    candidateProfile = data.profile;
+                    renderAnalysisProfile(data.profile, data.role);
+                    setTimeout(() => {
+                        onboardingLoading.style.display = 'none';
+                        goToScreen('Analysis');
+                    }, 500);
+                } else {
+                    alert("Error: " + (data.error || "Analysis failed."));
+                    onboardingLoading.style.display = 'none';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Network error: Make sure Flask backend is running on port 5000.");
+                onboardingLoading.style.display = 'none';
+            });
+        });
+
+        // ==========================================
+        // 2. Screen 2: Render Analysis Grid
+        // ==========================================
+
+        function renderAnalysisProfile(profile, role) {
+            analysisRoleTitle.textContent = `${role} Profile Assessment`;
+            
+            // Render Skills
+            profileSkills.innerHTML = "";
+            if (profile.skills && profile.skills.length > 0) {
+                profile.skills.forEach(skill => {
+                    const badge = document.createElement('span');
+                    badge.className = 'skill-badge';
+                    badge.textContent = skill;
+                    profileSkills.appendChild(badge);
+                });
+            } else {
+                profileSkills.innerHTML = "<p style='font-size:0.9rem; color:var(--text-muted);'>No skills identified.</p>";
+            }
+
+            // Render Missing Skills
+            profileMissingSkills.innerHTML = "";
+            if (profile.missing_skills && profile.missing_skills.length > 0) {
+                profile.missing_skills.forEach(skill => {
+                    const badge = document.createElement('span');
+                    badge.className = 'missing-badge';
+                    badge.textContent = skill;
+                    profileMissingSkills.appendChild(badge);
+                });
+            } else {
+                profileMissingSkills.innerHTML = "<p style='font-size:0.9rem; color:var(--text-muted);'>Perfect alignment. No core missing skills detected!</p>";
+            }
+
+            // Render Strengths
+            profileStrengths.innerHTML = "";
+            if (profile.strengths && profile.strengths.length > 0) {
+                profile.strengths.forEach(strength => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i data-lucide="check" style="width: 18px; color: var(--accent-secondary);"></i> <span>${strength}</span>`;
+                    profileStrengths.appendChild(li);
+                });
+            } else {
+                profileStrengths.innerHTML = "<li style='color:var(--text-muted);'>Strengths assessment pending.</li>";
+            }
+
+            // Render Projects
+            profileProjects.innerHTML = "";
+            if (profile.projects && profile.projects.length > 0) {
+                profile.projects.forEach(proj => {
+                    const div = document.createElement('div');
+                    div.className = 'project-item';
+                    div.innerHTML = `
+                        <div class="project-title">${proj.title || "Project Name"}</div>
+                        <div class="project-desc">${proj.description || "Description of operations."}</div>
+                        <div class="project-tech">Tech Stack: ${proj.tech_used || "Not specified"}</div>
+                    `;
+                    profileProjects.appendChild(div);
+                });
+            } else {
+                profileProjects.innerHTML = "<p style='font-size:0.9rem; color:var(--text-muted);'>No projects extracted.</p>";
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Start Mock Interview - Generate Questions
+        btnInitiateInterview.addEventListener('click', function() {
+            updateAgentStatus('Question Agent Compiling Arena...', true);
+            
+            // Show Loading Spinner on Screen 2 before going to Arena
+            onboardingLoadingText.textContent = "Deploying Question Swarm...";
+            onboardingLoading.style.display = 'flex';
+            goToScreen('Onboarding'); // Move to onboarding screen just to display loader transition
+            
+            fetch("/api/generate-questions", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    role: targetRole,
+                    profile: candidateProfile
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Could not compile questions.");
+                return res.json();
+            })
+            .then(data => {
+                onboardingLoading.style.display = 'none';
+                if (data.success) {
+                    interviewQuestions = data.questions;
+                    currentQuestionIndex = 0;
+                    sessionAnswers = [];
+                    goToScreen('Arena');
+                    loadQuestion(currentQuestionIndex);
+                } else {
+                    alert("Error creating questions: " + data.error);
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Network error creating questions.");
+                onboardingLoading.style.display = 'none';
+                goToScreen('Analysis');
+            });
+        });
+
+        // ==========================================
+        // 3. Screen 3: Interview Arena
+        // ==========================================
+
+        function loadQuestion(index) {
+            // Hide previous feedback
+            evaluationDrawer.style.display = "none";
+            accordionContent.style.display = "none";
+            accordionChevron.style.transform = "rotate(0deg)";
+            
+            const q = interviewQuestions[index];
+            arenaQuestionIndex.textContent = `Question ${index + 1} of ${interviewQuestions.length}`;
+            arenaQuestionType.textContent = q.type || "Technical";
+            arenaQuestionText.textContent = q.question;
+            
+            // Style question badge colors
+            if (q.type && q.type.includes("HR")) {
+                arenaQuestionType.style.borderColor = "var(--accent-warning)";
+                arenaQuestionType.style.color = "var(--accent-warning)";
+                arenaQuestionType.style.backgroundColor = "rgba(217, 119, 6, 0.1)";
+            } else if (q.type && q.type.includes("Scenario")) {
+                arenaQuestionType.style.borderColor = "var(--accent-primary)";
+                arenaQuestionType.style.color = "var(--accent-primary)";
+                arenaQuestionType.style.backgroundColor = "rgba(124, 58, 237, 0.1)";
+            } else {
+                arenaQuestionType.style.borderColor = "var(--accent-secondary)";
+                arenaQuestionType.style.color = "var(--accent-secondary)";
+                arenaQuestionType.style.backgroundColor = "rgba(13, 148, 136, 0.1)";
+            }
+            
+            // Reset text area
+            answerTextarea.value = "";
+            answerWordCount.textContent = "0 words";
+            btnSubmitAnswer.removeAttribute('disabled');
+            
+            // Start Timer
+            startTimer(120); // 2 minutes per question
+            updateAgentStatus(`Question ${index + 1} Assessment`, true);
+        }
+
+        // Active countdown timer code
+        function startTimer(durationSeconds) {
+            clearInterval(interviewTimer);
+            timerSecondsRemaining = durationSeconds;
+            timerTotalSeconds = durationSeconds;
+            timerValue.textContent = timerSecondsRemaining;
+            
+            // Reset stroke
+            timerCircle.style.strokeDashoffset = 0;
+            timerCircle.style.stroke = "var(--accent-secondary)";
+            
+            interviewTimer = setInterval(() => {
+                timerSecondsRemaining--;
+                timerValue.textContent = timerSecondsRemaining;
+                
+                // SVG circular progress calculation
+                const radius = 28;
+                const circumference = 2 * Math.PI * radius; // Approx 176
+                const ratio = timerSecondsRemaining / timerTotalSeconds;
+                const offset = circumference - (ratio * circumference);
+                
+                timerCircle.style.strokeDashoffset = offset;
+                
+                // Alert warning threshold
+                if (timerSecondsRemaining <= 20) {
+                    timerCircle.style.stroke = "var(--accent-danger)";
+                    timerValue.style.color = "var(--accent-danger)";
+                } else if (timerSecondsRemaining <= 45) {
+                    timerCircle.style.stroke = "var(--accent-warning)";
+                }
+                
+                if (timerSecondsRemaining <= 0) {
+                    clearInterval(interviewTimer);
+                    // Force submit on time expiration
+                    alert("Time expired! Automatically submitting your draft response.");
+                    submitUserResponse();
+                }
+            }, 1000);
+        }
+
+        // Live Word counter
+        answerTextarea.addEventListener('input', function() {
+            const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            answerWordCount.textContent = `${words} words`;
+        });
+
+        // Submit answer to Feedback Agent
+        btnSubmitAnswer.addEventListener('click', () => {
+            submitUserResponse();
+        });
+
+        function submitUserResponse() {
+            clearInterval(interviewTimer);
+            const answer = answerTextarea.value.trim();
+            
+            arenaLoadingText.textContent = "Feedback Agent Grading Response...";
+            arenaLoading.style.display = 'flex';
+            btnSubmitAnswer.setAttribute('disabled', 'true');
+            
+            fetch("/api/submit-answer", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    question: interviewQuestions[currentQuestionIndex],
+                    answer: answer
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Evaluation request failed.");
+                return res.json();
+            })
+            .then(data => {
+                arenaLoading.style.display = 'none';
+                if (data.success) {
+                    renderEvaluation(data.evaluation);
+                } else {
+                    alert("Grading error: " + data.error);
+                    btnSubmitAnswer.removeAttribute('disabled');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Network error submitting response.");
+                arenaLoading.style.display = 'none';
+                btnSubmitAnswer.removeAttribute('disabled');
+            });
+        }
+
+        // Skip Question Route
+        btnSkipQuestion.addEventListener('click', () => {
+            if (confirm("Are you sure you want to skip? This question will receive a score of 0.")) {
+                clearInterval(interviewTimer);
+                // Record zero score
+                const q = interviewQuestions[currentQuestionIndex];
+                sessionAnswers.push({
+                    question_id: q.id,
+                    type: q.type,
+                    score: 0,
+                    confidence: "None",
+                    correctness: "Skipped by candidate.",
+                    suggestions: "Review this topic thoroughly as skipping indicates severe technical gaps.",
+                    suggested_answer: q.model_answer,
+                    resources: q.resources
+                });
+                advanceQuestion();
+            }
+        });
+
+        // Next Question Route
+        btnNextQuestion.addEventListener('click', () => {
+            advanceQuestion();
+        });
+
+        function advanceQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < interviewQuestions.length) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                renderFinalScorecard();
+            }
+        }
+
+        // ==========================================
+        // 4. Render Real-time Feedback Drawer
+        // ==========================================
+
+        function renderEvaluation(evalData) {
+            // Store results for final average
+            sessionAnswers.push({
+                question_id: interviewQuestions[currentQuestionIndex].id,
+                type: interviewQuestions[currentQuestionIndex].type,
+                score: evalData.score,
+                confidence: evalData.confidence,
+                correctness: evalData.correctness,
+                suggestions: evalData.suggestions,
+                suggested_answer: evalData.suggested_answer,
+                resources: evalData.resources
+            });
+            
+            // Show Feedback drawer
+            evaluationDrawer.style.display = "block";
+            
+            // Animate Score circle
+            evalScoreNumber.textContent = `${evalData.score}/10`;
+            const circumference = 2 * Math.PI * 37; // Approx 232
+            const offset = circumference - ((evalData.score / 10) * circumference);
+            
+            // Trigger animation thread
+            setTimeout(() => {
+                evalScoreCircle.style.strokeDashoffset = offset;
+            }, 50);
+            
+            // Phrasing Confidence Label
+            evalConfidence.textContent = evalData.confidence;
+            evalConfidence.className = `confidence-label conf-${evalData.confidence.toLowerCase().split('-')[0]}`;
+            
+            // Detail contents
+            evalCorrectness.textContent = evalData.correctness;
+            evalSuggestions.textContent = evalData.suggestions;
+            
+            // Suggested Accordion contents
+            accordionContent.innerHTML = `<p style="white-space: pre-wrap;">${evalData.suggested_answer}</p>`;
+            
+            // Resource links mapping
+            evalResources.innerHTML = "";
+            if (evalData.resources && evalData.resources.length > 0) {
+                evalResourcesPanel.style.display = "block";
+                evalData.resources.forEach(res => {
+                    const a = document.createElement('a');
+                    a.href = res.url;
+                    a.target = "_blank";
+                    a.className = "resource-link";
+                    a.innerHTML = `<i data-lucide="external-link" style="width: 14px;"></i> <span>${res.title}</span>`;
+                    evalResources.appendChild(a);
+                });
+            } else {
+                evalResourcesPanel.style.display = "none";
+            }
+            
+            // Set final button text if it is the last question
+            if (currentQuestionIndex === interviewQuestions.length - 1) {
+                btnNextQuestion.innerHTML = `Generate Final Performance Scorecard <i data-lucide="award" style="width: 18px;"></i>`;
+            } else {
+                btnNextQuestion.innerHTML = `Proceed to Next Question <i data-lucide="chevron-right" style="width: 18px;"></i>`;
+            }
+            
+            lucide.createIcons();
+            
+            // Smoothly scroll to drawer view
+            setTimeout(() => {
+                evaluationDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // Accordion Expand/Collapse Logic
+        btnAccordionToggle.addEventListener('click', () => {
+            if (accordionContent.style.display === "block") {
+                accordionContent.style.display = "none";
+                accordionChevron.style.transform = "rotate(0deg)";
+            } else {
+                accordionContent.style.display = "block";
+                accordionChevron.style.transform = "rotate(180deg)";
+                accordionContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        // ==========================================
+        // 5. Screen 5: Final Scoreboard Analysis
+        // ==========================================
+
+        function renderFinalScorecard() {
+            goToScreen('Scorecard');
+            
+            let totalScore = 0;
+            let countTech = 0, scoreTech = 0;
+            let countScenario = 0, scoreScenario = 0;
+            let countHR = 0, scoreHR = 0;
+            
+            sessionAnswers.forEach(ans => {
+                totalScore += ans.score;
+                const type = ans.type.toLowerCase();
+                
+                if (type.includes("tech")) {
+                    countTech++;
+                    scoreTech += ans.score;
+                } else if (type.includes("scenario") || type.includes("project")) {
+                    countScenario++;
+                    scoreScenario += ans.score;
+                } else {
+                    countHR++;
+                    scoreHR += ans.score;
+                }
+            });
+            
+            // Averages
+            const avgTech = countTech > 0 ? (scoreTech / countTech) : 7.0;
+            const avgScenario = countScenario > 0 ? (scoreScenario / countScenario) : 6.5;
+            const avgHR = countHR > 0 ? (scoreHR / countHR) : 8.0;
+            
+            const overallPercentage = Math.round((totalScore / (sessionAnswers.length * 10)) * 100);
+            
+            // Set radial score
+            finalOverallScoreText.textContent = `${overallPercentage}%`;
+            
+            const finalCircumference = Math.PI * 2 * 75; // Approx 471
+            const finalOffset = finalCircumference - ((overallPercentage / 100) * finalCircumference);
+            
+            setTimeout(() => {
+                finalOverallProgressCircle.style.strokeDashoffset = finalOffset;
+            }, 200);
+            
+            // Set text score numbers
+            scoreTechVal.textContent = `${avgTech.toFixed(1)}/10`;
+            scoreScenarioVal.textContent = `${avgScenario.toFixed(1)}/10`;
+            scoreHRVal.textContent = `${avgHR.toFixed(1)}/10`;
+            
+            // Set bar animation widths
+            setTimeout(() => {
+                barTech.style.width = `${avgTech * 10}%`;
+                barScenario.style.width = `${avgScenario * 10}%`;
+                barHR.style.width = `${avgHR * 10}%`;
+            }, 300);
+            
+            // Generate Swarm Recruiter Summary recommendations
+            let rec = "";
+            let badgeText = "";
+            let roadmapHTML = "";
+            
+            if (overallPercentage >= 80) {
+                badgeText = "ELITE CANDIDATE: APPROVED";
+                finalReviewAction.style.borderColor = "var(--accent-secondary)";
+                finalReviewAction.style.color = "var(--accent-secondary)";
+                finalReviewAction.style.backgroundColor = "rgba(13, 148, 136, 0.05)";
+                rec = `The AI Recruiter Swarm has reviewed your session. **You have demonstrated excellent technical depth, precise terminology, and stellar situational experience.** Your responses effectively address complex architectural trade-offs. You are highly competitive and ready to take standard live technical interviews.`;
+                
+                roadmapHTML = `
+                    <li><i data-lucide="star" style="color: var(--accent-secondary);"></i> <span>Keep writing clean, descriptive responses with concrete examples.</span></li>
+                    <li><i data-lucide="star" style="color: var(--accent-secondary);"></i> <span>Deep dive into high-scale performance profiling and caching to secure Lead Developer positions.</span></li>
+                `;
+            } else if (overallPercentage >= 60) {
+                badgeText = "SOLID PERFORMANCE: RECOMMENDED WITH STUDY";
+                finalReviewAction.style.borderColor = "var(--accent-primary)";
+                finalReviewAction.style.color = "var(--accent-primary)";
+                finalReviewAction.style.backgroundColor = "rgba(124, 58, 237, 0.05)";
+                rec = `You displayed a **solid foundational knowledge** across core concepts, but missed key technical specifics or trade-off assessments in some scenario questions. Reviewing precise memory management guidelines, design patterns, and standard frameworks will elevate your performance to the next level.`;
+                
+                roadmapHTML = `
+                    <li><i data-lucide="compass" style="color: var(--accent-primary);"></i> <span>Incorporate specific code structures and package names into your answers.</span></li>
+                    <li><i data-lucide="compass" style="color: var(--accent-primary);"></i> <span>Study missing topics: <strong>${candidateProfile?.missing_skills?.slice(0,2).join(', ') || "Docker, Redis"}</strong>.</span></li>
+                    <li><i data-lucide="compass" style="color: var(--accent-primary);"></i> <span>Review suggested answers from the questions you scored below 7.0.</span></li>
+                `;
+            } else {
+                badgeText = "NEEDS REVISION: ACTION ITEMS DEPLOYED";
+                finalReviewAction.style.borderColor = "var(--accent-warning)";
+                finalReviewAction.style.color = "var(--accent-warning)";
+                finalReviewAction.style.backgroundColor = "rgba(217, 119, 6, 0.05)";
+                rec = `Your responses are either **too brief** or lacked core industry-standard terminology. To successfully pass technical screens for a **${targetRole}**, you must expand your explanations, explicitly address architectural bottlenecks, and tie responses to real production achievements.`;
+                
+                roadmapHTML = `
+                    <li><i data-lucide="alert-triangle" style="color: var(--accent-warning);"></i> <span><strong>Rule of Thumb:</strong> Write at least 4-5 sentences incorporating crucial tech key terms.</span></li>
+                    <li><i data-lucide="alert-triangle" style="color: var(--accent-warning);"></i> <span>Set up personal sandbox projects with: <strong>${candidateProfile?.missing_skills?.join(', ') || "Flask, SQL, Docker"}</strong>.</span></li>
+                    <li><i data-lucide="alert-triangle" style="color: var(--accent-warning);"></i> <span>Practice speaking answers using our Speech-to-Text utility to improve communication confidence.</span></li>
+                `;
+            }
+            
+            finalSwarmRecommendation.innerHTML = rec;
+            finalReviewAction.textContent = badgeText;
+            finalRoadmapItems.innerHTML = roadmapHTML;
+            
+            lucide.createIcons();
+        }
+
+        // Restart session
+        btnRestartSession.addEventListener('click', () => {
+            uploadedFile = null;
+            candidateProfile = null;
+            interviewQuestions = [];
+            currentQuestionIndex = 0;
+            sessionAnswers = [];
+            
+            // Reset upload zone
+            uploadIcon.innerHTML = '<i data-lucide="file-text" style="width: 32px; height: 32px;"></i>';
+            uploadText.innerHTML = `
+                <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Drag & Drop your resume here</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">or click to browse from local files (PDF only, max 10MB)</p>
+            `;
+            btnStartAnalysis.setAttribute('disabled', 'true');
+            
+            goToScreen('Onboarding');
+        });
+
+        // Download Report summary mock
+        btnDownloadReport.addEventListener('click', () => {
+            let docContent = `=======================================\n`;
+            docContent += `INTERVIEW PREPARATION AGENT REPORT\n`;
+            docContent += `Target Role: ${targetRole}\n`;
+            docContent += `Overall Performance: ${finalOverallScoreText.textContent}\n`;
+            docContent += `=======================================\n\n`;
+            
+            sessionAnswers.forEach((ans, i) => {
+                docContent += `Question ${i+1} [${ans.type}] Score: ${ans.score}/10\n`;
+                docContent += `Confidence level: ${ans.confidence}\n`;
+                docContent += `Assessment: ${ans.correctness}\n`;
+                docContent += `Recruiter suggestions: ${ans.suggestions}\n`;
+                docContent += `---------------------------------------\n\n`;
+            });
+            
+            const blob = new Blob([docContent], {type: "text/plain;charset=utf-8"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Interview_Report_${targetRole.replace(/\s+/g, "_")}.txt`;
+            link.click();
+        });
+
+        // ==========================================
+        // 6. Web Speech API (Speech to Text)
+        // ==========================================
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let isRecordingSpeech = false;
+        let speechRecognizer = null;
+
+        if (SpeechRecognition) {
+            speechRecognizer = new SpeechRecognition();
+            speechRecognizer.continuous = true;
+            speechRecognizer.interimResults = true;
+            speechRecognizer.lang = 'en-US';
+
+            speechRecognizer.onstart = function() {
+                isRecordingSpeech = true;
+                btnMicInput.classList.add('recording');
+                voiceActiveIndicator.style.display = 'flex';
+                updateAgentStatus('Speech recognition tracking voice...', true);
+            };
+
+            speechRecognizer.onerror = function(event) {
+                console.error("Speech Recognition Error: ", event.error);
+                stopSpeechRecognition();
+            };
+
+            speechRecognizer.onend = function() {
+                stopSpeechRecognition();
+            };
+
+            speechRecognizer.onresult = function(event) {
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript + ' ';
+                    }
+                }
+                
+                if (finalTranscript) {
+                    // Append speech to textarea
+                    const cursorPosition = answerTextarea.selectionStart;
+                    const text = answerTextarea.value;
+                    const before = text.substring(0, cursorPosition);
+                    const after = text.substring(cursorPosition, text.length);
+                    
+                    answerTextarea.value = before + (before.endsWith(' ') || before === '' ? '' : ' ') + finalTranscript.trim() + ' ' + after;
+                    
+                    // Trigger live word count updating
+                    const words = answerTextarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    answerWordCount.textContent = `${words} words`;
+                }
+            };
+        } else {
+            // Hide mic input button or show warning on hover if not supported
+            btnMicInput.style.opacity = '0.5';
+            btnMicInput.title = "Speech Recognition not supported in this browser (Use Chrome or Edge).";
+            btnMicInput.addEventListener('click', () => {
+                alert("Speech recognition is unfortunately not supported by your current browser. Please utilize Google Chrome, MS Edge, or Apple Safari for complete functionality.");
+            });
+        }
+
+        btnMicInput.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!SpeechRecognition) return; // Handled above
+
+            if (isRecordingSpeech) {
+                stopSpeechRecognition();
+            } else {
+                answerTextarea.focus();
+                try {
+                    speechRecognizer.start();
+                } catch(e) {
+                    console.error("Recognizer already started:", e);
+                }
+            }
+        });
+
+        function stopSpeechRecognition() {
+            if (!SpeechRecognition) return;
+            isRecordingSpeech = false;
+            btnMicInput.classList.remove('recording');
+            voiceActiveIndicator.style.display = 'none';
+            updateAgentStatus(`Question ${currentQuestionIndex + 1} Assessment`, true);
+            try {
+                speechRecognizer.stop();
+            } catch(e) {}
+        }
+    </script>
+</body>
+</html>
